@@ -12,8 +12,10 @@
  *
  * Time complexity, where n is the number of entries:
  *   add              O(1)
- *   addToEnd         O(n)
+ *   addToEnd         O(1)   uses lastNode instead of walking
+ *   add(int, T)      O(n)   walks to the node before the position
  *   remove()         O(1)
+ *   remove(int)      O(n)   walks to the node before the position
  *   remove(T)        O(n)
  *   clear            O(1)
  *   get              O(n)
@@ -22,8 +24,9 @@
  *   size             O(1)
  *   isEmpty          O(1)
  *   toArray          O(n)
+ *   toString         O(n)
  *
- * @author CS 2114 Staff
+ * @author Rahul Rajendran
  * @version September 2026
  *
  * @param <T> the type of entries stored in the chain
