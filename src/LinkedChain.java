@@ -31,6 +31,7 @@
 public class LinkedChain<T>
 {
     private Node<T> firstNode;   // reference to the first node, or null
+    private Node<T> lastNode; // reference to the last node, or null
     private int numberOfEntries; // number of nodes in the chain
 
     /**
@@ -39,6 +40,7 @@ public class LinkedChain<T>
     public LinkedChain()
     {
         firstNode = null;
+        lastNode = null;
         numberOfEntries = 0;
     }
 
@@ -53,6 +55,9 @@ public class LinkedChain<T>
     {
         requireNonNull(newEntry);
         firstNode = new Node<T>(newEntry, firstNode);
+        if (lastNode == null) {
+            lastNode = firstNode;
+        }
         numberOfEntries++;
         return true;
     }
@@ -68,21 +73,43 @@ public class LinkedChain<T>
     {
         requireNonNull(newEntry);
         Node<T> newNode = new Node<T>(newEntry);
-        if (firstNode == null)
+        if (lastNode == null)
         {
             firstNode = newNode;
         }
         else
         {
-            Node<T> current = firstNode;
-            while (current.next != null)
-            {
-                current = current.next;
-            }
-            current.next = newNode;
+            lastNode.next = newNode;       
         }
+        lastNode = newNode;
         numberOfEntries++;
         return true;
+    }
+    
+    public boolean add(int position, T newEntry) {
+        requireNonNull(newEntry);
+        if (position < 0 || position > numberOfEntries)
+        {
+            throw new IndexOutOfBoundsException(
+                "Position " + position + " out of bounds for size "
+                + numberOfEntries);
+        }
+        if (position == 0)
+        {
+            add(newEntry);
+        }
+        else if (position == numberOfEntries)
+        {
+            addToEnd(newEntry);
+        }
+        else
+        {
+            Node<T> before = nodeAt(position - 1);
+            before.next = new Node<T>(newEntry, before.next);
+            numberOfEntries++;
+        }
+        return true;
+
     }
 
     /**
@@ -98,9 +125,41 @@ public class LinkedChain<T>
         }
         T result = firstNode.data;
         firstNode = firstNode.next;
+        if (firstNode == null)
+        {
+            lastNode = null; // chain is now empty
+        }
         numberOfEntries--;
         return result;
+
     }
+    
+    /**
+     * Removes and returns the entry at the given position.
+     *
+     * @param position the zero-based position, from 0 to size() - 1
+     * @return the removed entry
+     * @throws IndexOutOfBoundsException if position is negative or
+     *         greater than or equal to size()
+     */
+    public T remove(int position)
+    {
+        checkIndex(position);
+        if (position == 0)
+        {
+            return remove();
+        }
+        Node<T> before = nodeAt(position - 1);
+        Node<T> removed = before.next;
+        before.next = removed.next;
+        if (removed == lastNode)
+        {
+            lastNode = before; // removed the last node
+        }
+        numberOfEntries--;
+        return removed.data;
+    }
+
 
     /**
      * Removes the first occurrence of a given entry from this chain.
@@ -142,6 +201,7 @@ public class LinkedChain<T>
     public void clear()
     {
         firstNode = null;
+        lastNode = null;
         numberOfEntries = 0;
     }
 
@@ -155,18 +215,8 @@ public class LinkedChain<T>
      */
     public T get(int index)
     {
-        if (index < 0 || index >= numberOfEntries)
-        {
-            throw new IndexOutOfBoundsException(
-                "Index " + index + " out of bounds for size "
-                + numberOfEntries);
-        }
-        Node<T> current = firstNode;
-        for (int i = 0; i < index; i++)
-        {
-            current = current.next;
-        }
-        return current.data;
+        checkIndex(index);
+        return nodeAt(index).data;
     }
 
     /**
@@ -294,6 +344,40 @@ public class LinkedChain<T>
             throw new IllegalArgumentException("Cannot add null to chain");
         }
     }
+    
+    /**
+     * Walks from the front to the node at a valid position.
+     *
+     * @param index a zero-based position from 0 to size() - 1
+     * @return the node at that position
+     */
+    private Node<T> nodeAt(int index)
+    {
+        Node<T> current = firstNode;
+        for (int i = 0; i < index; i++)
+        {
+            current = current.next;
+        }
+        return current;
+    }
+    
+    /**
+     * Rejects a position that does not hold an entry.
+     *
+     * @param index the zero-based position to check
+     * @throws IndexOutOfBoundsException if index is negative or
+     *         index is greater than or equal to size()
+     */
+    private void checkIndex(int index)
+    {
+        if (index < 0 || index >= numberOfEntries)
+        {
+            throw new IndexOutOfBoundsException(
+                "Index " + index + " out of bounds for size "
+                + numberOfEntries);
+        }
+    }
+
 
     /**
      * A node in the chain. Holds one entry and a link to the next node.
