@@ -1,6 +1,6 @@
-Project
+## Attribution
+
 | File | Team member(s) | Contribution (how) |
 |---|---|---|
-| `LinkedChain.java` | Rahul Rajendran | Revised the given LinkedChain class with AI assitance, most notable change was adding a `lastNode` reference as a tail. In this case specifically AI
-to draft code after explain functionality (ex: We want to easily be able to add items at the end of the change, how should we adjust the given methods, as a result of adding the last node)
-| `LinkedChainTest.java` | Rahul Rajendran | Drafted using Gen AI based on the initially test's from our spec's test plan, then handchecked to ensure complete code coverage, and additional edge cases were handled. Manually updated exception testing as well. Used AI by prompting what specific cases I wanted after passing through the spec doc.
+| `LinkedChain.java` | Rahul Rajendran | Revised the given LinkedChain class with AI assistance. The most notable change was adding a `lastNode` reference as a tail.<br>Specifically, I asked AI to draft code after explaining the functionality we wanted (e.g., "We want to easily add items at the end of the chain; how should we adjust the given methods as a result of adding the last node?"). |
+| `LinkedChainTest.java` | Rahul Rajendran | Drafted using GenAI based on the initial tests from our spec's test plan, then hand-checked to ensure complete code coverage and that additional edge cases were handled. Manually updated the exception tests.<br>Used AI by prompting for the specific cases I wanted after going through the spec doc. |
