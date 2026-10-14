@@ -178,8 +178,7 @@ public class LinkedChain<T>
         }
         if (anEntry.equals(firstNode.data))
         {
-            firstNode = firstNode.next;
-            numberOfEntries--;
+            remove();
             return true;
         }
         Node<T> previous = firstNode;
@@ -189,6 +188,9 @@ public class LinkedChain<T>
             if (anEntry.equals(current.data))
             {
                 previous.next = current.next;
+                if (current == lastNode) {
+                    lastNode = previous;
+                }
                 numberOfEntries--;
                 return true;
             }
