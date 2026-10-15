@@ -7,6 +7,8 @@
 | `Party.java`, `MenuItem.java` | Rohail Amjad | Wrote both classes from the spec's signature tables with AI assistance (validation, getters, `toString`), then reviewed each method against the spec. |
 | `Table.java` | Rohail Amjad | Wrote with AI assistance from the spec and class design: seating, order handling, and the itemized bill in `close()`. Checked each method's behavior and Big-O against the spec by hand. |
 | `PartyTest.java`, `MenuItemTest.java`, `TableTest.java` | Rohail Amjad | Drafted with AI assistance from the spec's test plan, then added extra edge cases (too-big party, `fits`, empty-order bill). |
+| `Restaurant.java` | Brian Ding | Implemented with AI assistance from the spec: fixed tables and menu, size-aware seating, waitlist reservations and cancellations, and closing tables with automatic seating of the first waiting party that fits. |
+| `RestaurantTest.java` | Brian Ding | Drafted with AI assistance from the spec's test plan, including invalid inputs, duplicate party names, reservation positions, skipped parties, clean orders after seating, and independent array snapshots. |
 
 ## Reflection
 
@@ -17,7 +19,10 @@
 - `Party` and `MenuItem` match the spec's signature tables, with one addition: a `toString()` on each (`"Garcia (4)"`, `"Burger $12.00"`) so the app can print them. Both trim the name before storing it.
 - `Table` gained `getNumber()`, `getSeats()`, `getParty()`, and `fits(Party)`, which the spec didn't list. `Restaurant` needs them to find the lowest-numbered open table that fits a party, report who is seated, and seat the first waiting party that fits when a table closes.
 - The `Table` constructor also rejects a table number below 1, not just a seat count below 1. `seat()` throws `IllegalArgumentException` for a null party or one larger than the table, so a table can never hold a party bigger than its seats. It still throws `IllegalStateException` if the table is occupied.
-- > **TODO (Brian):** State what you built for the two spec contradictions: is the menu a `LinkedChain<MenuItem>` or a `MenuItem[]`, and does `getTable` throw `IllegalArgumentException` or `IndexOutOfBoundsException`? Say why.
+- `Restaurant` stores its menu as a `LinkedChain<MenuItem>`, following the spec's Data & State section and generic contract. `getMenu()` returns a new `MenuItem[]` so callers cannot replace stored entries. The spec does not choose dishes, so the initial menu is Burger ($12.00), Salad ($8.00), Pasta ($15.00), Soda ($2.50), and Water ($0.00). Copying this fixed-size menu is O(1) relative to the waitlist and orders (O(m) in menu length).
+- `Restaurant.getTable()` throws `IndexOutOfBoundsException` for numbers outside 1 through 6, following the spec's validation table and its other position-based operations. The test plan's `IllegalArgumentException` entry conflicts with that validation table.
+- `addReservation()` inserts at the requested waitlist position even when a table is open, following its explicit method contract. This is an exception to the spec's broader statement that no open table can fit a waiting party. Arrivals use `addParty()` for immediate seating; reservations remain on the waitlist until cancellation or seating when a table closes.
+- `closeTable()` is O(o + w), where o is the order length and w is the waitlist length. The spec's complexity table omitted scanning the waitlist. A single array snapshot and at most one positional removal keep that work linear.
 - > **TODO (Alex):** Say whether `RestaurantApp` takes a `Scanner` in its constructor, and whether it is tested with JUnit instead of the manual script the spec planned. Say why.
 
 ### What changed in the LinkedChain?
@@ -30,8 +35,7 @@
 ### What happened to our unknowns?
 - **Tail reference:** Figured out. We added it; the hard part was keeping it correct in every method that removes, which testing confirmed.
 - **Cancelling the right party when two look identical:** Figured out. We cancel by waitlist position, because `Party` doesn't override `equals()`.
-- **Open table doesn't fit the next party:** Designed (seat the first waiting party that fits; otherwise leave the table open).
-  > **TODO (Brian):** Replace "Designed" with "Figured out" or "Still open," depending on whether `closeTable` implements this and has a passing test.
+- **Open table doesn't fit the next party:** Figured out. `closeTable()` seats the first waiting party that fits and preserves the order of everyone else; if none fits, the table stays open. Both cases have passing tests in `RestaurantTest`.
 
 ### What doesn't work yet?
 - `LinkedChain` and `LinkedChainTest` are complete, and all tests pass.
@@ -39,7 +43,8 @@
   1. MVP features not finished: none. The stretch goal (special requests in `Table`) is not built yet.
   2. Bad-input cases that still crash: none. Blank names, bad sizes, negative prices, and invalid seat counts throw the documented exceptions.
   3. Tests failing or marked TODO: none. `PartyTest`, `MenuItemTest`, and `TableTest` are fully written and pass.
-- > **TODO (Brian, Alex):** Each list, for your own classes: (1) MVP features not finished, (2) bad-input cases from the scope that still crash, (3) tests still failing or still marked TODO. Name the specific method or test. If nothing is missing, write "Complete."
+- **Brian (`Restaurant`):** Complete. All assigned MVP methods and `RestaurantTest` are implemented. Invalid names, sizes, waitlist positions, table numbers, and attempts to close open tables throw the documented exceptions for the app to handle. All 26 `RestaurantTest` tests pass, along with all existing tests in `LinkedChainTest`, `PartyTest`, `MenuItemTest`, and `TableTest` (90 tests total).
+- > **TODO (Alex):** List (1) MVP features not finished, (2) bad-input cases from the scope that still crash, (3) tests still failing or still marked TODO. Name the specific method or test. If nothing is missing, write "Complete."
 
 ## Next Steps
 
@@ -60,6 +65,6 @@
 ### Who does what?
 - **Rahul:** Integration, plus reviewing everyone's tests against the spec's test plan.
 - **Rohail:** Special requests in `Table`, plus its tests.
-- **Brian:** Remaining `Restaurant` work, plus its tests.
+- **Brian:** `Restaurant` and its tests are complete; support integration with `RestaurantApp`.
 - **Alex:** The "add request" menu option in `RestaurantApp`, plus its tests.
 - > **TODO (whole group):** Confirm the owners. Every MVP item and stretch goal above needs a name.
