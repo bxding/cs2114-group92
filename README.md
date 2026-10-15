@@ -4,8 +4,8 @@
 |---|---|---|
 | `LinkedChain.java` | Rahul Rajendran | Revised the given LinkedChain class with AI assistance. The most notable change was adding a `lastNode` reference as a tail.<br>Specifically, I asked AI to draft code after explaining the functionality we wanted (e.g., "We want to easily add items at the end of the chain; how should we adjust the given methods as a result of adding the last node?"). |
 | `LinkedChainTest.java` | Rahul Rajendran | Drafted using GenAI based on the initial tests from our spec's test plan, then hand-checked to ensure complete code coverage and that additional edge cases were handled. Manually updated the exception tests.Used AI by prompting for the specific cases I wanted after pasing through the spec doc. |
-| `Party.java`, `MenuItem.java` | Rohail Amjad | Filled in the provided template with AI assistance (validation, getters, `toString`), then reviewed each method against the spec's signature tables. |
-| `Table.java` | Rohail Amjad | Implemented with AI assistance from the template and spec: seating, order handling, and the itemized bill in `close()`. Checked each method's behavior and Big-O against the spec by hand. |
+| `Party.java`, `MenuItem.java` | Rohail Amjad | Wrote both classes from the spec's signature tables with AI assistance (validation, getters, `toString`), then reviewed each method against the spec. |
+| `Table.java` | Rohail Amjad | Wrote with AI assistance from the spec and class design: seating, order handling, and the itemized bill in `close()`. Checked each method's behavior and Big-O against the spec by hand. |
 | `PartyTest.java`, `MenuItemTest.java`, `TableTest.java` | Rohail Amjad | Drafted with AI assistance from the spec's test plan, then added extra edge cases (too-big party, `fits`, empty-order bill). |
 
 ## Reflection
