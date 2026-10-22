@@ -131,9 +131,14 @@ public class Table
      * @return the removed item
      * @throws IndexOutOfBoundsException if position is not a line in the
      *         order (including when the order is empty)
+     * @throws IllegalStateException if the table is open
      */
     public MenuItem removeItem(int position)
     {
+        if (party == null) {
+            throw new IllegalStateException("Table " + number + " is empty");
+        }
+            
         return order.remove(position - 1);
     }
 

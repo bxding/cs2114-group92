@@ -208,6 +208,7 @@ public class TableTest
     @Test
     public void testRemoveItemNotThere()
     {
+        table.seat(garcia);
         try
         {
             table.removeItem(1);
@@ -218,7 +219,7 @@ public class TableTest
             // expected
         }
 
-        table.seat(garcia);
+        
         table.addItem(burger);
         try
         {
@@ -237,6 +238,22 @@ public class TableTest
         catch (IndexOutOfBoundsException e)
         {
             assertEquals(1, table.getOrder().length);
+        }
+    }
+    /**
+     * removeItem on an open table -> throws IllegalStateException.
+     */
+    @Test
+    public void testRemoveItemOpenTable()
+    {
+        try
+        {
+            table.removeItem(1);
+            fail("Expected IllegalStateException");
+        }
+        catch (IllegalStateException e)
+        {
+            assertEquals(0, table.getOrder().length);
         }
     }
 

@@ -1,5 +1,4 @@
-import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,6 +74,18 @@ public class PartyTest
     public void testToString()
     {
         assertEquals("Garcia (4)", garcia.toString());
+    }
+    /**
+     * Two separate "Smith (2)" parties don't match, because Party doesn't
+     * override equals(). This is why the app cancels by waitlist position
+     * instead of by name.
+     */
+    @Test
+    public void testIdenticalPartiesAreDifferent()
+    {
+        LinkedChain<Party> waitlist = new LinkedChain<Party>();
+        waitlist.addToEnd(new Party("Smith", 2));
+        assertFalse(waitlist.contains(new Party("Smith", 2)));
     }
 
     private void assertThrowsIAE(String name, int size)
