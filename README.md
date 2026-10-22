@@ -1,3 +1,10 @@
+# Table Service: A Restaurant Floor Manager
+
+CS 2114 · Project 2: Building for Reuse · Group 92 (Rahul Rajendran, Rohail Amjad, Brian Ding, Alex Chai)
+
+Table Service is a terminal program where the user manages a small restaurant during a dinner shift. The manager seats arriving parties at the smallest open table that fits, keeps a waitlist with reservations and cancellations, takes orders from a menu, adds special requests, and prints each table's bill. When a table closes, the first waiting party that fits is seated automatically.
+
+Everything is stored in one generic `LinkedChain<T>` that we modified from the provided class. The same class holds three element types: the waitlist (`LinkedChain<Party>`), each table's order (`LinkedChain<MenuItem>`), and each table's special requests (`LinkedChain<String>`).
 
 ## How to Compile and Run
 
