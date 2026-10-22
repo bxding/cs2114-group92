@@ -32,7 +32,7 @@
 
 ## System Diagram
 
-![System diagram](SystemDiagramP2.jpg)
+![System diagram](SystemDiagramP2.jpeg)
 
 ## Attribution
 
