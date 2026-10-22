@@ -114,7 +114,7 @@ public class RestaurantAppTest
     @Test
     public void testDefaultConstructor()
     {
-        System.setIn(new ByteArrayInputStream("1\nGarcia\n4\n10\n".getBytes()));
+        System.setIn(new ByteArrayInputStream("1\nGarcia\n4\n11\n".getBytes()));
         new RestaurantApp().run();
         assertTrue(output.toString().contains("Garcia (4) seated at table 3."));
     }
@@ -126,7 +126,7 @@ public class RestaurantAppTest
     @Test
     public void testMain()
     {
-        System.setIn(new ByteArrayInputStream("10\n".getBytes()));
+        System.setIn(new ByteArrayInputStream("11\n".getBytes()));
         RestaurantApp.main(new String[0]);
         assertTrue(output.toString().contains("Goodbye!"));
     }
@@ -138,10 +138,10 @@ public class RestaurantAppTest
     @Test
     public void testMainBadInput()
     {
-        System.setIn(new ByteArrayInputStream("abc\n10\n".getBytes()));
+        System.setIn(new ByteArrayInputStream("abc\n11\n".getBytes()));
         RestaurantApp.main(new String[0]);
         String out = output.toString();
-        assertTrue(out.contains("Please enter a number from 1 to 10."));
+        assertTrue(out.contains("Please enter a number from 1 to 11."));
         assertTrue(out.contains("Goodbye!"));
     }
 
@@ -155,7 +155,7 @@ public class RestaurantAppTest
     public void testRunBadMenuChoice()
     {
         String out = run("abc", "0", "99", "10");
-        assertEquals(3, count(out, "Please enter a number from 1 to 10."));
+        assertEquals(3, count(out, "Please enter a number from 1 to 11."));
         assertTrue(out.contains("Goodbye!"));
     }
 
@@ -192,7 +192,7 @@ public class RestaurantAppTest
     public void testRunAddPartyBlankName()
     {
         String out = run("1", "", "   ", "Lee", "2", "10");
-        assertEquals(2, count(out, "Name cannot be blank."));
+        assertEquals(2, count(out, "Party name cannot be blank."));
         assertTrue(out.contains("Lee (2) seated at table 1."));
     }
 
@@ -438,5 +438,38 @@ public class RestaurantAppTest
         String out = run("1");
         assertTrue(out.contains("Error:"));
         assertTrue(out.contains("Goodbye!"));
+    }
+    
+    /**
+     * A special request is added to a seated table and shows on the bill.
+     */
+    @Test
+    public void testRunAddRequest()
+    {
+        String out = run("1", "Lee", "2", "10", "1", "no onions", "8", "1", "11");
+        assertTrue(out.contains("Added request \"no onions\" to table 1."));
+        assertTrue(out.contains("- no onions"));
+    }
+
+    /**
+     * A blank request reprompts.
+     */
+    @Test
+    public void testRunAddRequestBlank()
+    {
+        String out = run("1", "Lee", "2", "10", "1", "", "   ", "no onions", "11");
+        assertEquals(2, count(out, "Request cannot be blank."));
+        assertTrue(out.contains("Added request \"no onions\" to table 1."));
+    }
+
+    /**
+     * A request for an open table prints a message instead of crashing.
+     */
+    @Test
+    public void testRunAddRequestOpenTable()
+    {
+        String out = run("10", "1", "11");
+        assertTrue(out.contains("Table 1 is empty"));
+        assertFalse(out.contains("Error:"));
     }
 }

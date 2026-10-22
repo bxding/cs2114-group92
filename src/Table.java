@@ -20,6 +20,7 @@ public class Table
     private final int seats;
     private Party party;                    // null when open
     private final LinkedChain<MenuItem> order;
+    private final LinkedChain<String> requests;
 
     /**
      * Creates an open table with an empty order.
@@ -42,6 +43,7 @@ public class Table
         this.seats = seats;
         this.party = null;
         this.order = new LinkedChain<MenuItem>();
+        this.requests = new LinkedChain<String>();
     }
 
     /**
@@ -141,6 +143,37 @@ public class Table
             
         return order.remove(position - 1);
     }
+    
+    /**
+     * Adds a special request (e.g. "no onions") to the end of this table's
+     * requests. Duplicates are allowed, since two guests can ask for the
+     * same thing. O(1).
+     *
+     * @param request the request text; must not be blank
+     * @throws IllegalArgumentException if request is null or blank
+     * @throws IllegalStateException if the table is open
+     */
+    public void addRequest(String request)
+    {
+        if (request == null || request.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("Request cannot be blank");
+        }
+        if (party == null)
+        {
+            throw new IllegalStateException("Table " + number + " is empty");
+        }
+        requests.addToEnd(request.trim());
+    }
+
+    /**
+     * @return the special requests in the order they were added, as a new
+     *         array (empty if there are none). O(n).
+     */
+    public String[] getRequests()
+    {
+        return requests.toArray(new String[requests.size()]);
+    }
 
     /**
      * @return the order's items in the order they were added, as a new
@@ -195,10 +228,20 @@ public class Table
                 bill.append(i + 1).append(". ").append(items[i]).append("\n");
             }
         }
+        String[] notes = getRequests();
+        if (notes.length > 0)
+        {
+            bill.append("Requests:\n");
+            for (String note : notes)
+            {
+                bill.append("- ").append(note).append("\n");
+            }
+        }
         bill.append("Total: $").append(String.format("%.2f", getTotal()));
 
         party = null;
         order.clear();
+        requests.clear();
         return bill.toString();
     }
 }

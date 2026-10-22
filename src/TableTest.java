@@ -356,4 +356,102 @@ public class TableTest
             assertTrue(table.isOpen());
         }
     }
+    
+    /**
+     * A request on a seated table is stored and returned.
+     */
+    @Test
+    public void testAddRequest()
+    {
+        table.seat(garcia);
+        table.addRequest("no onions");
+        String[] requests = table.getRequests();
+        assertEquals(1, requests.length);
+        assertEquals("no onions", requests[0]);
+    }
+
+    /**
+     * Requests keep their order, and duplicates are allowed.
+     */
+    @Test
+    public void testAddRequestOrderAndDuplicates()
+    {
+        table.seat(garcia);
+        table.addRequest("no onions");
+        table.addRequest("extra napkins");
+        table.addRequest("no onions");
+        String[] requests = table.getRequests();
+        assertEquals(3, requests.length);
+        assertEquals("no onions", requests[0]);
+        assertEquals("extra napkins", requests[1]);
+        assertEquals("no onions", requests[2]);
+    }
+
+    /**
+     * A null, blank, or all-spaces request -> throws
+     * IllegalArgumentException; requests unchanged.
+     */
+    @Test
+    public void testAddRequestBadInput()
+    {
+        table.seat(garcia);
+        String[] bad = { null, "", "   " };
+        for (String request : bad)
+        {
+            try
+            {
+                table.addRequest(request);
+                fail("Expected IllegalArgumentException");
+            }
+            catch (IllegalArgumentException e)
+            {
+                assertEquals(0, table.getRequests().length);
+            }
+        }
+    }
+
+    /**
+     * A request on an open table -> throws IllegalStateException.
+     */
+    @Test
+    public void testAddRequestOpenTable()
+    {
+        try
+        {
+            table.addRequest("no onions");
+            fail("Expected IllegalStateException");
+        }
+        catch (IllegalStateException e)
+        {
+            assertEquals(0, table.getRequests().length);
+        }
+    }
+
+    /**
+     * A seated table with no requests -> empty array.
+     */
+    @Test
+    public void testGetRequestsEmpty()
+    {
+        assertEquals(0, table.getRequests().length);
+        table.seat(garcia);
+        assertEquals(0, table.getRequests().length);
+    }
+
+    /**
+     * Requests appear on the bill and are cleared for the next party.
+     */
+    @Test
+    public void testCloseWithRequests()
+    {
+        table.seat(garcia);
+        table.addItem(burger);
+        table.addRequest("no onions");
+        String bill = table.close();
+        assertTrue(bill.contains("Requests:"));
+        assertTrue(bill.contains("- no onions"));
+        assertEquals(0, table.getRequests().length);
+        table.seat(new Party("Lee", 2));
+        assertEquals(0, table.getRequests().length);
+    }
 }

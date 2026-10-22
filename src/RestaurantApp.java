@@ -12,6 +12,8 @@ public class RestaurantApp
 {
     private final Restaurant restaurant;
     private final Scanner in;
+    /** The main menu number for Quit. */
+    private static final int QUIT = 11;
 
     /**
      * Creates an app that reads from the keyboard.
@@ -54,11 +56,11 @@ public class RestaurantApp
     public void run()
     {
         int choice = 0;
-        while (choice != 10)
+        while (choice != QUIT)
         {
             printMainMenu();
-            choice = readInt("Choice", 1, 10);
-            if (choice != 10)
+            choice = readInt("Choice", 1, QUIT);
+            if (choice != QUIT)
             {
                 try
                 {
@@ -79,7 +81,7 @@ public class RestaurantApp
      * Calls the handler that matches a main menu choice.
      *
      * @param choice
-     *            a number from 1 to 9 (10 is Quit and is handled by run)
+     *            a number from 1 to 10 (11 is Quit and is handled by run)
      */
     private void handleChoice(int choice)
     {
@@ -112,6 +114,8 @@ public class RestaurantApp
             case 9:
                 handleFloorStatus();
                 break;
+            case 10:
+                handleAddRequest();
             default:
                 break;
         }
@@ -131,8 +135,8 @@ public class RestaurantApp
         System.out.println("6. View a table's order");
         System.out.println("7. Remove an item from an order");
         System.out.println("8. Close a table");
-        System.out.println("9. View the floor");
-        System.out.println("10. Quit");
+        System.out.println("10. Add a special request");
+        System.out.println("11. Quit");
     }
 
 
@@ -205,7 +209,7 @@ public class RestaurantApp
             {
                 return line;
             }
-            System.out.println("Name cannot be blank.");
+            System.out.println(prompt + " cannot be blank.");
         }
     }
 
@@ -389,6 +393,25 @@ public class RestaurantApp
                 "Table " + number + " (" + table.getSeats() + " seats): "
                     + status);
         }
+    }
+    
+    /**
+     * Reads a table number and a special request (e.g. "no onions"), then
+     * adds it to that table. Prints "Table n is empty" if no party is seated.
+     */
+    private void handleAddRequest()
+    {
+        int number = readInt("Table (1-6)", 1, 6);
+        Table table = restaurant.getTable(number);
+        if (table.isOpen())
+        {
+            System.out.println("Table " + number + " is empty");
+            return;
+        }
+        String request = readNonBlank("Request");
+        table.addRequest(request);
+        System.out.println(
+            "Added request \"" + request + "\" to table " + number + ".");
     }
 
 
